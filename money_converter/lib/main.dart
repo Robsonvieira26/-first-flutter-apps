@@ -10,15 +10,15 @@ void main() async {
   runApp(MaterialApp(
     home: Home(),
     theme: ThemeData(
-      hintColor: Colors.yellowAccent,
-      primaryColor: Colors.yellow,
-      inputDecorationTheme: InputDecorationTheme(
-        enabledBorder:
-        OutlineInputBorder(borderSide: BorderSide(color: Colors.yellow)),
-        focusedBorder:
-        OutlineInputBorder(borderSide: BorderSide(color: Colors.yellowAccent)),
-        hintStyle: TextStyle(color: Colors.yellowAccent),
-      )),
+        hintColor: Colors.yellowAccent,
+        primaryColor: Colors.yellow,
+        inputDecorationTheme: InputDecorationTheme(
+          enabledBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: Colors.yellow)),
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.yellowAccent)),
+          hintStyle: TextStyle(color: Colors.yellowAccent),
+        )),
   ));
 }
 
@@ -33,8 +33,22 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final realController = TextEditingController();
+  final dolarController = TextEditingController();
+  final euroController = TextEditingController();
+
   double euro;
   double usddolar;
+
+  void _realChanger(String text){
+    double real = double.parse(text);
+  }
+  void _dolarChanger(String text){
+    double dolar = double.parse(text);
+  }
+  void _euroChanger(String text){
+    double euro = double.parse(text);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,43 +83,21 @@ class _HomeState extends State<Home> {
                       textAlign: TextAlign.center,
                     ));
                   } else {
-                    usddolar=snapshot.data["results"]["currencies"]["USD"]["buy"];
+                    usddolar =
+                        snapshot.data["results"]["currencies"]["USD"]["buy"];
                     euro = snapshot.data["results"]["currencies"]["EUR"]["buy"];
                     return SingleChildScrollView(
                       padding: EdgeInsets.all(10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
-                          Icon(Icons.monetization_on,color: Colors.yellowAccent, size: 100),
-                          TextField(
-                            decoration: InputDecoration(
-                              labelText: "Reais",
-                              labelStyle: TextStyle(color: Colors.yellowAccent),
-                              border: OutlineInputBorder(),
-                              prefixText: "R\$ ",
-                            ),
-                            style: TextStyle(color: Colors.yellowAccent),
-                          ),
+                          Icon(Icons.monetization_on,
+                              color: Colors.yellowAccent, size: 100),
+                          buildTextField("Reais", "R\$ ",realController,_realChanger),
                           Divider(),
-                          TextField(
-                            decoration: InputDecoration(
-                              labelText: "Dolares",
-                              labelStyle: TextStyle(color: Colors.yellowAccent),
-                              border: OutlineInputBorder(),
-                              prefixText: "\$ ",
-                            ),
-                            style: TextStyle(color: Colors.yellowAccent),
-                          ),
+                          buildTextField("Dolares", "\$ ",dolarController,_dolarChanger),
                           Divider(),
-                          TextField(
-                            decoration: InputDecoration(
-                              labelText: "Euros",
-                              labelStyle: TextStyle(color: Colors.yellowAccent),
-                              border: OutlineInputBorder(),
-                              prefixText: "€ ",
-                            ),
-                            style: TextStyle(color: Colors.yellowAccent),
-                          )
+                          buildTextField("Euros", "€ ",euroController,_euroChanger),
                         ],
                       ),
                     );
@@ -113,4 +105,19 @@ class _HomeState extends State<Home> {
               }
             }));
   }
+}
+
+Widget buildTextField(String label, String prefix,TextEditingController ctrl,Function func) {
+  return TextField(
+    controller: ctrl,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.yellowAccent),
+      border: OutlineInputBorder(),
+      prefixText: prefix,
+    ),
+    style: TextStyle(color: Colors.yellowAccent),
+    onChanged: func,
+    keyboardType: TextInputType.number,
+  );
 }
