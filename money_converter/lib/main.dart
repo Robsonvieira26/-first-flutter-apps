@@ -40,14 +40,40 @@ class _HomeState extends State<Home> {
   double euro;
   double usddolar;
 
-  void _realChanger(String text){
+  void _clearAll(){
+    realController.text = "";
+    dolarController.text = "";
+    euroController.text = "";
+  }
+
+  void _realChanged(String text){
+    if(text.isEmpty) {
+      _clearAll();
+      return;
+    }
     double real = double.parse(text);
+    dolarController.text = (real/usddolar).toStringAsFixed(2);
+    euroController.text = (real/euro).toStringAsFixed(2);
   }
-  void _dolarChanger(String text){
+
+  void _dolarChanged(String text){
+    if(text.isEmpty) {
+      _clearAll();
+      return;
+    }
     double dolar = double.parse(text);
+    realController.text = (dolar * usddolar).toStringAsFixed(2);
+    euroController.text = (dolar * usddolar / euro).toStringAsFixed(2);
   }
-  void _euroChanger(String text){
+
+  void _euroChanged(String text){
+    if(text.isEmpty) {
+      _clearAll();
+      return;
+    }
     double euro = double.parse(text);
+    realController.text = (euro * this.euro).toStringAsFixed(2);
+    dolarController.text = (euro * this.euro / usddolar).toStringAsFixed(2);
   }
   @override
   Widget build(BuildContext context) {
@@ -93,11 +119,11 @@ class _HomeState extends State<Home> {
                         children: <Widget>[
                           Icon(Icons.monetization_on,
                               color: Colors.yellowAccent, size: 100),
-                          buildTextField("Reais", "R\$ ",realController,_realChanger),
+                          buildTextField("Reais", "R\$ ",realController,_realChanged),
                           Divider(),
-                          buildTextField("Dolares", "\$ ",dolarController,_dolarChanger),
+                          buildTextField("Dolares", "\$ ",dolarController,_dolarChanged),
                           Divider(),
-                          buildTextField("Euros", "€ ",euroController,_euroChanger),
+                          buildTextField("Euros", "€ ",euroController,_euroChanged),
                         ],
                       ),
                     );
@@ -118,6 +144,6 @@ Widget buildTextField(String label, String prefix,TextEditingController ctrl,Fun
     ),
     style: TextStyle(color: Colors.yellowAccent),
     onChanged: func,
-    keyboardType: TextInputType.number,
+      keyboardType: TextInputType.numberWithOptions(decimal: true),
   );
 }
