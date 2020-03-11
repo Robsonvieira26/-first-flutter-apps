@@ -25,15 +25,42 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Conversor",
-            style: TextStyle(
-              color: Colors.black,
-            )),
-        backgroundColor: Colors.yellowAccent,
-      ),
-    );
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text("Conversor",
+              style: TextStyle(
+                color: Colors.black,
+              )),
+          backgroundColor: Colors.yellowAccent,
+        ),
+        body: FutureBuilder<Map>(
+            future: getData(),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                case ConnectionState.waiting:
+                  return Center(
+                      child: Text(
+                    "Carregando Dados...",
+                    style: TextStyle(color: Colors.yellowAccent, fontSize: 25),
+                    textAlign: TextAlign.center,
+                  ));
+                default:
+                  if (snapshot.hasError) {
+                    return Center(
+                        child: Text(
+                      "Erro ao carregar dados",
+                      style:
+                          TextStyle(color: Colors.yellowAccent, fontSize: 25),
+                      textAlign: TextAlign.center,
+                    ));
+                  } else {
+                    return Container(
+                      color: Colors.green,
+                    );
+                  }
+              }
+            }));
   }
 }
