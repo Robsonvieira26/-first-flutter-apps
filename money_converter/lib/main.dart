@@ -36,14 +36,20 @@ class _HomeState extends State<Home> {
   final realController = TextEditingController();
   final dolarController = TextEditingController();
   final euroController = TextEditingController();
+  final bitcoinController = TextEditingController();
+  final libraController = TextEditingController();
 
   double euro;
   double usddolar;
+  double bitcoin;
+  double libra;
 
   void _clearAll(){
     realController.text = "";
     dolarController.text = "";
     euroController.text = "";
+    bitcoinController.text = "";
+    libraController.text = "";
   }
 
   void _realChanged(String text){
@@ -54,6 +60,8 @@ class _HomeState extends State<Home> {
     double real = double.parse(text);
     dolarController.text = (real/usddolar).toStringAsFixed(2);
     euroController.text = (real/euro).toStringAsFixed(2);
+    libraController.text= (real/libra).toStringAsFixed(2);
+    bitcoinController.text =(real/bitcoin).toStringAsFixed(8);
   }
 
   void _dolarChanged(String text){
@@ -63,7 +71,9 @@ class _HomeState extends State<Home> {
     }
     double dolar = double.parse(text);
     realController.text = (dolar * usddolar).toStringAsFixed(2);
-    euroController.text = (dolar * usddolar / euro).toStringAsFixed(2);
+    euroController.text = ((dolar * usddolar) / euro).toStringAsFixed(2);
+    libraController.text=((dolar * usddolar) / libra).toStringAsFixed(2);
+    bitcoinController.text=((dolar * usddolar) / bitcoin).toStringAsFixed(8);
   }
 
   void _euroChanged(String text){
@@ -73,8 +83,35 @@ class _HomeState extends State<Home> {
     }
     double euro = double.parse(text);
     realController.text = (euro * this.euro).toStringAsFixed(2);
-    dolarController.text = (euro * this.euro / usddolar).toStringAsFixed(2);
+    dolarController.text = ((euro * this.euro) / usddolar).toStringAsFixed(2);
+    libraController.text = ((euro * this.euro) / libra).toStringAsFixed(2);
+    bitcoinController.text = ((euro * this.euro) / bitcoin).toStringAsFixed(8);
   }
+
+  void _bitcoinChanged(String text){
+    if(text.isEmpty) {
+      _clearAll();
+      return;
+    }
+    double bit = double.parse(text);
+    realController.text = (bit*bitcoin).toStringAsFixed(2);
+    euroController.text = ((bit*bitcoin)/euro).toStringAsFixed(2);
+    dolarController.text =((bit*bitcoin)/usddolar).toStringAsFixed(2);
+    libraController.text =((bit*bitcoin)/libra).toStringAsFixed(2);
+  }
+
+  void _libraChanged(String text){
+    if(text.isEmpty) {
+      _clearAll();
+      return;
+    }
+    double libra = double.parse(text);
+    realController.text = (libra*this.libra).toStringAsFixed(2);
+    euroController.text = ((libra*this.libra)/euro).toStringAsFixed(2);
+    dolarController.text =((libra*this.libra)/usddolar).toStringAsFixed(2);
+    bitcoinController.text =((libra*this.libra)/bitcoin).toStringAsFixed(5);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,9 +146,11 @@ class _HomeState extends State<Home> {
                       textAlign: TextAlign.center,
                     ));
                   } else {
-                    usddolar =
-                        snapshot.data["results"]["currencies"]["USD"]["buy"];
+                    usddolar = snapshot.data["results"]["currencies"]["USD"]["buy"];
                     euro = snapshot.data["results"]["currencies"]["EUR"]["buy"];
+                    bitcoin =snapshot.data["results"]["currencies"]["BTC"]["buy"];
+                    libra=snapshot.data["results"]["currencies"]["GBP"]["buy"];
+
                     return SingleChildScrollView(
                       padding: EdgeInsets.all(10),
                       child: Column(
@@ -124,6 +163,11 @@ class _HomeState extends State<Home> {
                           buildTextField("Dolares", "\$ ",dolarController,_dolarChanged),
                           Divider(),
                           buildTextField("Euros", "€ ",euroController,_euroChanged),
+                          Divider(),
+                          buildTextField("Libras esterlinas", "£ ",libraController,_libraChanged),
+                          Divider(),
+                          buildTextField("BitCoin","Ƀ ",bitcoinController,_bitcoinChanged),
+
                         ],
                       ),
                     );
